@@ -6,7 +6,7 @@ Welcome to the **BasisCraft Ban Appeal System** repository! This project is a co
 
 ## Features
 
-- **Multilingual Support**: Available in English and Chinese.
+- **Multilingual Support**: Available in English and Chinese (Simplified/Traditional) .
 - **Dynamic Appeal System**: Submit appeals for unfair bans, hacked accounts, or other reasons.
 - **Progress Tracking**: Check the status of your appeal with a visually appealing progress bar.
 - **Responsive Design**: Optimized for both desktop and mobile devices.
@@ -65,29 +65,13 @@ Follow these steps to set up the project locally:
   - `App.js`: Main application component.
   - `index.js`: Entry point of the application.
 
-### Key Components
-
-- **BasisMinecraftSystem**: Main component that handles the appeal form and status checking.
-- **Translations**: Object containing translations for English and Chinese languages.
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the repository**.
-2. **Create a new branch**: `git checkout -b feature-branch`
-3. **Make your changes**.
-4. **Commit your changes**: `git commit -m 'Add some feature'`
-5. **Push to the branch**: `git push origin feature-branch`
-6. **Open a pull request**.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Special thanks to **Sean Ma** and **Gary** for their contributions to this project.
+- Special thanks to **Sean Ma in BIHZ (Front-End)** and **Gary in BIBWH (Back-End)** for their contributions to this project.
 - Inspired by the Minecraft community.
 
 ---
