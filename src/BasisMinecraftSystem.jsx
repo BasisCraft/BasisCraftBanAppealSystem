@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import AdminPanel from './AdminPanel';
 
 const BasisCraftBanAppealSystem = () => {
   const [language, setLanguage] = useState('en');
@@ -18,6 +19,11 @@ const BasisCraftBanAppealSystem = () => {
   const [statusDetails, setStatusDetails] = useState('');
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [appeals, setAppeals] = useState([]);
+  const [showAdminVerification, setShowAdminVerification] = useState(false);
+  const [adminCode, setAdminCode] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
 
   const translations = {
     en: {
@@ -37,6 +43,7 @@ const BasisCraftBanAppealSystem = () => {
       status: 'Status',
       unfairBan: 'Unfair Ban',
       hackedAccount: 'Hacked Account',
+      unmute: 'Unmute',
       other: 'Other',
       selectCategory: 'Select Category',
       backToWebsite: 'Back to Official Website',
@@ -50,37 +57,50 @@ const BasisCraftBanAppealSystem = () => {
       banIdExample: 'Enter the Ban ID you received when you were banned',
       appealReasonExample: 'Explain in detail why you believe your ban should be lifted',
       additionalInfoExample: 'Provide any additional information that might support your appeal',
+      adminPanel: 'Admin Panel',
+      enterAdminCode: 'Enter Admin Verification Code',
+      sendCode: 'Send Code',
+      invalidCode: 'Invalid Code',
+      verifyCode: 'Verify Code',
+      adminEmail: 'Admin Email',
     },
     zh: {
-        title: 'BasisCraft 封禁申诉系统',
-        smp: 'BasisSMP',
-        minigame: 'BasisMinigame',
-        mcName: '我的世界用户名',
-        email: '电子邮件地址',
-        banId: '封禁ID',
-        appealCategory: '申诉类别',
-        appealReason: '申诉理由',
-        additionalInfo: '附加信息',
-        submit: '提交申诉',
-        checkStatus: '检查申诉状态',
-        enterReportNumber: '输入报告编号',
-        check: '检查状态',
-        status: '状态',
-        unfairBan: '不公平封禁',
-        hackedAccount: '账号被盗',
-        other: '其他',
-        selectCategory: '选择类别',
-        backToWebsite: '返回官方网站',
-        appealSubmitted: '申诉提交成功！',
-        reportNumberIs: '您的报告编号是：',
-        processingTime: '我们将在48小时内处理您的申诉。',
-        close: '关闭',
-        inquire: '?',
-        mcNameExample: '输入您的确切我的世界用户名，例如 Steve123',
-        emailExample: '输入一个有效的电子邮件地址，我们可以通过它联系您',
-        banIdExample: '输入您被封禁时收到的封禁ID',
-        appealReasonExample: '详细解释为什么您认为应该解除封禁',
-        additionalInfoExample: '提供任何可能支持您申诉的额外信息',
+      title: 'BasisCraft 封禁申诉系统',
+      smp: 'BasisSMP',
+      minigame: 'BasisMinigame',
+      mcName: '我的世界用户名',
+      email: '电子邮件地址',
+      banId: '封禁ID',
+      appealCategory: '申诉类别',
+      appealReason: '申诉理由',
+      additionalInfo: '附加信息',
+      submit: '提交申诉',
+      checkStatus: '检查申诉状态',
+      enterReportNumber: '输入报告编号',
+      check: '检查状态',
+      status: '状态',
+      unfairBan: '不公平封禁',
+      hackedAccount: '账号被盗',
+      unmute: '解除禁言',
+      other: '其他',
+      selectCategory: '选择类别',
+      backToWebsite: '返回官方网站',
+      appealSubmitted: '申诉提交成功！',
+      reportNumberIs: '您的报告编号是：',
+      processingTime: '我们将在48小时内处理您的申诉。',
+      close: '关闭',
+      inquire: '？',
+      mcNameExample: '输入您的确切我的世界用户名，例如 Steve123',
+      emailExample: '输入一个有效的电子邮件地址，我们可以通过它联系您',
+      banIdExample: '输入您被封禁时收到的封禁ID',
+      appealReasonExample: '详细解释为什么您认为应该解除封禁',
+      additionalInfoExample: '提供任何可能支持您申诉的额外信息',
+      adminPanel: '管理员面板',
+      enterAdminCode: '输入管理员验证码',
+      sendCode: '发送验证码',
+      invalidCode: '无效的验证码',
+      verifyCode: '验证代码',
+      adminEmail: '管理员邮箱',
     },
   };
 
@@ -99,8 +119,9 @@ const BasisCraftBanAppealSystem = () => {
     const newReportNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
     setReportNumber(newReportNumber);
     setSubmissionStatus('submitted');
-    setNotificationMessage(`${t('appealSubmitted')} ${t('reportNumberIs')} ${newReportNumber}`);
+    setNotificationMessage(t('appealSubmitted'));
     setShowNotification(true);
+    setAppeals([...appeals, { ...formData, reportNumber: newReportNumber, status: 'Pending' }]);
   };
 
   const handleCheck = useCallback(() => {
@@ -133,6 +154,30 @@ const BasisCraftBanAppealSystem = () => {
       {t('inquire')}
     </button>
   );
+
+  const handleAdminAccess = () => {
+    setShowAdminVerification(true);
+    // In a real application, you would send an email with a verification code here
+    console.log('Sending verification code to admin email');
+  };
+
+  const verifyAdminCode = () => {
+    // In a real application, you would verify the code against the one sent to the email
+    if (adminCode === '123456') {
+      setIsAdmin(true);
+      setShowAdminVerification(false);
+    } else {
+      setNotificationMessage(t('invalidCode'));
+      setShowNotification(true);
+    }
+  };
+
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => setShowNotification(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 p-4 flex items-center justify-center">
@@ -200,21 +245,6 @@ const BasisCraftBanAppealSystem = () => {
                 />
               </div>
               <div>
-                <label htmlFor="banId" className="block text-white text-sm font-medium mb-1">
-                  {t('banId')}
-                  {renderInquiryButton('banId')}
-                </label>
-                <input
-                  type="text"
-                  id="banId"
-                  name="banId"
-                  value={formData.banId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 bg-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
                 <label htmlFor="appealCategory" className="block text-white text-sm font-medium mb-1">
                   {t('appealCategory')}
                 </label>
@@ -229,9 +259,27 @@ const BasisCraftBanAppealSystem = () => {
                   <option value="">{t('selectCategory')}</option>
                   <option value="unfairBan">{t('unfairBan')}</option>
                   <option value="hackedAccount">{t('hackedAccount')}</option>
+                  <option value="unmute">{t('unmute')}</option>
                   <option value="other">{t('other')}</option>
                 </select>
               </div>
+              {formData.appealCategory === 'unfairBan' && (
+                <div>
+                  <label htmlFor="banId" className="block text-white text-sm font-medium mb-1">
+                    {t('banId')}
+                    {renderInquiryButton('banId')}
+                  </label>
+                  <input
+                    type="text"
+                    id="banId"
+                    name="banId"
+                    value={formData.banId}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              )}
               <div>
                 <label htmlFor="appealReason" className="block text-white text-sm font-medium mb-1">
                   {t('appealReason')}
@@ -295,21 +343,21 @@ const BasisCraftBanAppealSystem = () => {
                   <p className="text-center mt-2 text-white text-sm">{statusDetails}</p>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
+              </div>
+              </div>
+              </div>
 
-        {submissionStatus === 'submitted' && (
-          <div className="mt-8 p-4 bg-green-500 bg-opacity-20 rounded-md">
-            <h3 className="text-lg font-semibold text-white">{t('appealSubmitted')}</h3>
-            <p className="text-white">{t('reportNumberIs')} <strong>{reportNumber}</strong></p>
-            <p className="text-white">{t('processingTime')}</p>
-          </div>
-        )}
+              {submissionStatus === 'submitted' && (
+              <div className="mt-8 p-4 bg-green-500 bg-opacity-20 rounded-md">
+              <h3 className="text-lg font-semibold text-white">{t('appealSubmitted')}</h3>
+              <p className="text-white">{t('reportNumberIs')} <strong>{reportNumber}</strong></p>
+              <p className="text-white">{t('processingTime')}</p>
+              </div>
+              )}
 
-        {showNotification && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-lg shadow-xl max-w-md w-full">
+              {showNotification && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+              <div className="bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-lg shadow-xl max-w-md w-full transition-all duration-300 ease-in-out transform scale-100 opacity-100">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-gray-800">Notification</h3>
                 <button 
@@ -320,21 +368,80 @@ const BasisCraftBanAppealSystem = () => {
                 </button>
               </div>
               <p className="text-gray-700">{notificationMessage}</p>
-            </div>
-          </div>
-        )}
+              </div>
+              </div>
+              )}
 
-        <footer className="mt-8 text-center">
-          <p className="text-sm text-gray-400">
-            Copyright © 2023-2024 BIHZ Sean Ma & BIBWH Gary. All Rights Reserved. | Version: 0.0.1 | Privacy Policy
-          </p>
-          <a href="#" className="text-blue-400 hover:text-blue-300 mt-2 inline-block">
-            {t('backToWebsite')}
-          </a>
-        </footer>
-      </div>
-    </div>
-  );
-};
+              <footer className="mt-8 text-center">
+              <p className="text-sm text-gray-400">
+              Copyright © 2023-2024 BIHZ Sean Ma & BIBWH Gary. All Rights Reserved. | Version: 0.0.1 | 
+              <a href="/privacy-policy" className="text-blue-400 hover:text-blue-300 ml-1">Privacy Policy</a> | 
+              <button onClick={handleAdminAccess} className="text-blue-400 hover:text-blue-300 ml-1 bg-transparent border-none cursor-pointer">
+              {t('adminPanel')}
+              </button>
+              </p>
+              <a href="#" className="text-blue-400 hover:text-blue-300 mt-2 inline-block">
+              {t('backToWebsite')}
+              </a>
+              </footer>
 
-export default BasisCraftBanAppealSystem;
+              {showAdminVerification && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+              <div className="bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-lg shadow-xl max-w-md w-full transition-all duration-300 ease-in-out transform scale-100 opacity-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('enterAdminCode')}</h3>
+              <input
+                type="email"
+                placeholder={t('adminEmail')}
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-100 rounded-md text-gray-800 mb-2"
+              />
+              <button
+                onClick={() => console.log('Sending code to', adminEmail)}
+                className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 mb-2"
+              >
+                {t('sendCode')}
+              </button>
+              <input
+                type="text"
+                placeholder={t('enterAdminCode')}
+                value={adminCode}
+                onChange={(e) => setAdminCode(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-100 rounded-md text-gray-800 mb-2"
+              />
+              <button
+                onClick={verifyAdminCode}
+                className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300"
+              >
+                {t('verifyCode')}
+              </button>
+              <button
+                onClick={() => setShowAdminVerification(false)}
+                className="mt-2 text-gray-600 hover:text-gray-800"
+              >
+                {t('close')}
+              </button>
+              </div>
+              </div>
+              )}
+
+              {isAdmin && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+              <div className="bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-lg shadow-xl max-w-4xl w-full h-3/4 overflow-auto transition-all duration-300 ease-in-out transform scale-100 opacity-100">
+              <AdminPanel appeals={appeals} setAppeals={setAppeals} t={t} />
+              <button
+                onClick={() => setIsAdmin(false)}
+                className="mt-4 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300"
+              >
+                {t('close')}
+              </button>
+              </div>
+              </div>
+              )}
+
+              </div>
+              </div>
+              );
+              };
+
+              export default BasisCraftBanAppealSystem;
