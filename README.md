@@ -6,7 +6,7 @@ Welcome to the **BasisCraft Ban Appeal System** repository! This project is a co
 
 ## Features
 
-- **Multilingual Support**: Available in English and Chinese (Simplified/Traditional) .
+- **Multilingual Support**: Available in English and Chinese (Simplified/Traditional).
 - **Dynamic Appeal System**: Submit appeals for unfair bans, hacked accounts, or other reasons.
 - **Progress Tracking**: Check the status of your appeal with a visually appealing progress bar.
 - **Responsive Design**: Optimized for both desktop and mobile devices.
